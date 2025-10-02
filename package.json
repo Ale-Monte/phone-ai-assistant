@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --watch \"src\" --watch .env --ext ts,js,xml,env --exec \"tsx\" src/server.ts",
-    "build": "tsc",
+    "build": "tsc && node -e \"require('fs').cpSync('src/twiml.xml','dist/twiml.xml')\"",
     "start": "node dist/server.js"
   },
   "keywords": [],
