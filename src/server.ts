@@ -33,6 +33,10 @@ app.use(express.urlencoded({ extended: false }));
 const twimlPath = join(__dirname, "twiml.xml");
 const twimlTemplate = readFileSync(twimlPath, "utf-8");
 
+app.get("/", (_req, res) => {
+  res.type("text/plain").send("Twilio Realtime websocket-server is running.\nTry /twiml, /public-url, or the WS endpoints /call and /logs.");
+});
+
 app.get("/public-url", (req, res) => {
   res.json({ publicUrl: PUBLIC_URL });
 });
