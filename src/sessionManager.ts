@@ -1,3 +1,4 @@
+// sessionManager.ts
 import { RawData, WebSocket } from "ws";
 import functions from "./functionHandlers";
 
@@ -131,20 +132,30 @@ function tryConnectModel() {
   );
 
   session.modelConn.on("open", () => {
-    const config = session.saved_config || {};
-    jsonSend(session.modelConn, {
-      type: "session.update",
-      session: {
-        modalities: ["text", "audio"],
-        turn_detection: { type: "server_vad" },
-        voice: "ash",
-        input_audio_transcription: { model: "whisper-1" },
-        input_audio_format: "g711_ulaw",
-        output_audio_format: "g711_ulaw",
-        ...config,
+  const config = session.saved_config || {};
+  jsonSend(session.modelConn, {
+    type: "session.update",
+    session: {
+      modalities: ["text", "audio"],
+      turn_detection: { type: "server_vad" },
+      voice: "sage",
+      input_audio_transcription: {
+        model: "gpt-4o-mini-transcribe", // or "gpt-4o-transcribe" or "whisper-1"
+        language: "es",
+        prompt: "Espera una conversación informal."
       },
-    });
+      input_audio_format: "g711_ulaw",
+      output_audio_format: "g711_ulaw",
+      tools: functions.map((f) => f.schema),
+      tool_choice: "auto",
+      instructions:"Eres Lupita, una IA servicial, ingeniosa y amistosa. Tu rol es ayudar a mejorar las ventas del dueño o dueña. Eres de la Ciudad de México. Habla de forma breve. Habla con acento chilango, con ese cantadito característico. Usa palabras coloquiales de México. Habla rápido. Siempre debes llamar a una función si es necesario.",
+      speed: 1.0,
+      include: ['item.input_audio_transcription.logprobs'],
+      ...config,
+    },
   });
+});
+
 
   session.modelConn.on("message", handleModelMessage);
   session.modelConn.on("error", closeModel);
